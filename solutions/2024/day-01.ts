@@ -1,6 +1,6 @@
 import { readLines } from "../../helpers/read-lines.ts";
 
-const solvePart1 = () => {
+const getIds = (): [number[], number[]] => {
   const lines = readLines("01", "2024", "actual");
   const ids = lines.map((line) =>
     line.split("   ").map((str) => parseInt(str))
@@ -13,6 +13,11 @@ const solvePart1 = () => {
     },
     [[] as number[], [] as number[]]
   );
+  return [leftArr, rightArr];
+};
+
+const solvePart1 = () => {
+  const [leftArr, rightArr] = getIds();
   leftArr.sort();
   rightArr.sort();
   const distances = leftArr.map((left, index) =>
