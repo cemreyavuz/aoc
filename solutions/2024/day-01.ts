@@ -27,4 +27,24 @@ const solvePart1 = () => {
   console.log(sum);
 };
 
+const solvePart2 = () => {
+  const [leftArr, rightArr] = getIds();
+  const occurrenceMap = rightArr.reduce((acc, cur) => {
+    if (acc[cur]) {
+      acc[cur] += 1;
+    } else {
+      acc[cur] = 1;
+    }
+    return acc;
+  }, {} as Record<string, number>);
+  const sum = leftArr.reduce((acc, cur) => {
+    if (occurrenceMap[cur]) {
+      return acc + cur * occurrenceMap[cur];
+    }
+    return acc;
+  }, 0);
+  console.log(sum);
+};
+
 solvePart1();
+solvePart2();

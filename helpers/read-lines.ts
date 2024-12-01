@@ -9,7 +9,7 @@ const INPUTS_DIRNAME = "inputs";
 type InputType = "example" | "actual";
 
 export const readLines = (day: string, year: string, type: InputType) => {
-  const filePath = path.resolve(DIRNAME, "..", INPUTS_DIRNAME, year, `day${day}.txt`);
+  const filePath = path.resolve(DIRNAME, "..", INPUTS_DIRNAME, year, `day${day}-${type}.txt`);
   const file = fs.readFileSync(filePath, { encoding: "utf-8" });
   const splitted = file.split(os.EOL);
   return splitted;
