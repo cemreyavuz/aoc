@@ -38,20 +38,29 @@ const multiplyDirection = (direction: number[], factor: number): number[] => {
   return direction.map((item) => item * factor);
 };
 
-const searchXmas = (matrix: string[][], i: number, j: number): number => {
-  if (matrix[i][j] !== "X") {
+const search = (
+  matrix: string[][],
+  i: number,
+  j: number,
+  searchTerm: string
+): number => {
+  if (matrix[i][j] !== searchTerm.charAt(0)) {
     return 0;
   }
 
   const count = DIRECTIONS.reduce((acc, cur) => {
-    if (!isExpectedChar(matrix, i, j, "M", cur)) {
-      return acc;
-    }
-    if (!isExpectedChar(matrix, i, j, "A", multiplyDirection(cur, 2))) {
-      return acc;
-    }
-    if (!isExpectedChar(matrix, i, j, "S", multiplyDirection(cur, 3))) {
-      return acc;
+    for (let s = 1; s < searchTerm.length; s += 1) {
+      if (
+        !isExpectedChar(
+          matrix,
+          i,
+          j,
+          searchTerm.charAt(s),
+          multiplyDirection(cur, s)
+        )
+      ) {
+        return acc;
+      }
     }
     return acc + 1;
   }, 0);
@@ -64,7 +73,7 @@ const countOccurrence = (matrix: string[][]): number => {
   for (let i = 0; i < matrix.length; i += 1) {
     for (let j = 0; j < matrix[0].length; j += 1) {
       if (matrix[i][j] === "X") {
-        count += searchXmas(matrix, i, j);
+        count += search(matrix, i, j, "XMAS");
       }
     }
   }
