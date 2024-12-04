@@ -1,4 +1,5 @@
 import { readLines } from "../../helpers/read-lines.ts";
+import { solve } from "../../helpers/solve.ts";
 
 enum ExpectedState {
   Opening,
@@ -68,11 +69,10 @@ const sanitizeProgram = (
   return sum;
 };
 
-const solvePart1 = () => {
-  const lines = readLines("03", "2024", "actual");
+const solvePart1 = solve("03", "2024", "actual", (lines) => {
   const sum = lines.reduce((acc, cur) => acc + sanitizeProgram(cur), 0);
-  console.log(sum);
-};
+  return sum;
+});
 
 const findNextDoInstruction = (program: string, startIndex: number) => {
   for (let i = startIndex; i < program.length; i += 1) {
@@ -127,8 +127,7 @@ const getEnabledRanges = (program: string): number[][] => {
   return ranges;
 };
 
-const solvePart2 = () => {
-  const lines = readLines("03", "2024", "actual");
+const solvePart2 = solve("03", "2024", "actual", (lines) => {
   const sum = [lines.join("")].reduce((acc, cur) => {
     const enabledRanges = getEnabledRanges(cur);
     return (
@@ -140,8 +139,8 @@ const solvePart2 = () => {
       )
     );
   }, 0);
-  console.log(sum);
-};
+  return sum;
+});
 
 solvePart1();
 solvePart2();
