@@ -1,4 +1,5 @@
 import { readLines } from "../../helpers/read-lines.ts";
+import { solve } from "../../helpers/solve.ts";
 
 const DIAGONAL_DIRECTIONS = [
   [1, 1],
@@ -84,8 +85,7 @@ const searchMas = (matrix: string[][], i: number, j: number): number => {
   return diagonalCount > 1 ? 1 : 0;
 };
 
-const solvePart1 = () => {
-  const lines = readLines("04", "2024", "actual");
+const solvePart1 = solve("04", "2024", "actual", (lines) => {
   const matrix = lines.map((line) => line.split(""));
   let count = 0;
   for (let i = 0; i < matrix.length; i += 1) {
@@ -95,11 +95,10 @@ const solvePart1 = () => {
       }
     }
   }
-  console.log(count);
-};
+  return count;
+});
 
-const solvePart2 = () => {
-  const lines = readLines("04", "2024", "actual");
+const solvePart2 = solve("04", "2024", "actual", (lines) => {
   const matrix = lines.map((line) => line.split(""));
   let count = 0;
   for (let i = 0; i < matrix.length; i += 1) {
@@ -109,8 +108,8 @@ const solvePart2 = () => {
       }
     }
   }
-  console.log(count);
-};
+  return count;
+});
 
 solvePart1();
 solvePart2();
