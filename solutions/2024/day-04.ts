@@ -1,15 +1,13 @@
 import { readLines } from "../../helpers/read-lines.ts";
 
-const DIRECTIONS = [
-  [0, 1],
+const DIAGONAL_DIRECTIONS = [
   [1, 1],
-  [1, 0],
   [1, -1],
-  [0, -1],
   [-1, -1],
-  [-1, 0],
   [-1, 1],
 ];
+
+const DIRECTIONS = [...DIAGONAL_DIRECTIONS, [0, 1], [1, 0], [0, -1], [-1, 0]];
 
 const isValidCoordinate = (
   matrix: string[][],
@@ -68,7 +66,27 @@ const search = (
   return count;
 };
 
-const countOccurrence = (matrix: string[][]): number => {
+const searchMas = (matrix: string[][], i: number, j: number): number => {
+  if (matrix[i][j] !== "A") {
+    return 0;
+  }
+
+  const diagonalCount = DIAGONAL_DIRECTIONS.reduce((acc, cur) => {
+    if (!isExpectedChar(matrix, i, j, "M", cur)) {
+      return acc;
+    }
+    if (!isExpectedChar(matrix, i, j, "S", multiplyDirection(cur, -1))) {
+      return acc;
+    }
+    return acc + 1;
+  }, 0);
+
+  return diagonalCount > 1 ? 1 : 0;
+};
+
+const solvePart1 = () => {
+  const lines = readLines("04", "2024", "actual");
+  const matrix = lines.map((line) => line.split(""));
   let count = 0;
   for (let i = 0; i < matrix.length; i += 1) {
     for (let j = 0; j < matrix[0].length; j += 1) {
@@ -77,14 +95,22 @@ const countOccurrence = (matrix: string[][]): number => {
       }
     }
   }
-  return count;
+  console.log(count);
 };
 
-const solvePart1 = () => {
+const solvePart2 = () => {
   const lines = readLines("04", "2024", "actual");
   const matrix = lines.map((line) => line.split(""));
-  const count = countOccurrence(matrix);
+  let count = 0;
+  for (let i = 0; i < matrix.length; i += 1) {
+    for (let j = 0; j < matrix[0].length; j += 1) {
+      if (matrix[i][j] === "A") {
+        count += searchMas(matrix, i, j);
+      }
+    }
+  }
   console.log(count);
 };
 
 solvePart1();
+solvePart2();
