@@ -4,34 +4,29 @@ const parseInput = (
   lines: string[]
 ): [Record<string, number[]>, Record<string, number[]>, number[][]] => {
   const splitIndex = lines.findIndex((line) => line === "");
-  const rulesForward = lines
+  const { forward, backward } = lines
     .slice(0, splitIndex)
     .map((line) => line.split("|").map((str) => parseInt(str)))
-    .reduce((acc, cur) => {
-      const [first, second] = cur;
-      if (acc[first]) {
-        acc[first].push(second);
-      } else {
-        acc[first] = [second];
+    .reduce(
+      (acc, cur) => {
+        const [first, second] = cur;
+        acc.forward[first] = acc.forward[first]
+          ? acc.forward[first].concat(second)
+          : [second];
+        acc.backward[second] = acc.backward[second]
+          ? acc.backward[second].concat(first)
+          : [first];
+        return acc;
+      },
+      { forward: {}, backward: {} } as {
+        forward: Record<string, number[]>;
+        backward: Record<string, number[]>;
       }
-      return acc;
-    }, {} as Record<string, number[]>);
-  const rulesBackward = lines
-    .slice(0, splitIndex)
-    .map((line) => line.split("|").map((str) => parseInt(str)))
-    .reduce((acc, cur) => {
-      const [first, second] = cur;
-      if (acc[second]) {
-        acc[second].push(first);
-      } else {
-        acc[second] = [first];
-      }
-      return acc;
-    }, {} as Record<string, number[]>);
+    );
   const updates = lines
     .slice(splitIndex + 1)
     .map((line) => line.split(",").map((str) => parseInt(str)));
-  return [rulesForward, rulesBackward, updates];
+  return [forward, backward, updates];
 };
 
 const validateUpdates = (
@@ -48,16 +43,11 @@ const validateUpdates = (
       return acc;
     }, {});
     const validUpdate = update.every((cur) => {
-      const forward = rulesForward[cur] ?? [];
-      const backward = rulesBackward[cur] ?? [];
-      if (forward.some((f) => set[f] && visited[f])) {
-        return false;
-      }
-      if (backward.some((b) => set[b] && !visited[b])) {
-        return false;
-      }
       visited[cur] = true;
-      return true;
+      return (
+        !rulesForward[cur]?.some((f) => set[f] && visited[f]) &&
+        !rulesBackward[cur]?.some((b) => set[b] && !visited[b])
+      );
     });
     if (validUpdate) {
       correctIndexes.push(index);
@@ -70,13 +60,11 @@ const validateUpdates = (
 
 const solvePart1 = solve("05", "2024", "actual", (lines) => {
   const [rulesForward, rulesBackward, updates] = parseInput(lines);
-
   const [correctIndexes] = validateUpdates(
     rulesForward,
     rulesBackward,
     updates
   );
-
   const sum = updates
     .filter((_, index) => {
       return correctIndexes.includes(index);
@@ -86,29 +74,26 @@ const solvePart1 = solve("05", "2024", "actual", (lines) => {
       return update[mid];
     })
     .reduce((acc, cur) => acc + cur, 0);
-
   return sum;
 });
 
 const solvePart2 = solve("05", "2024", "actual", (lines) => {
   const [rulesForward, rulesBackward, updates] = parseInput(lines);
-
   const [_, incorrectIndexes] = validateUpdates(
     rulesForward,
     rulesBackward,
     updates
   );
-
   const sum = updates
     .filter((_, index) => incorrectIndexes.includes(index))
     .map((update) => {
       const toBeSorted = [...update];
       const sorted = toBeSorted.sort((a, b) => {
         const forward = rulesForward[a] ?? [];
-        const backward = rulesBackward[b] ?? [];
         if (forward.includes(b)) {
           return -1;
         }
+        const backward = rulesBackward[b] ?? [];
         if (backward.includes(b)) {
           return 1;
         }
@@ -121,7 +106,6 @@ const solvePart2 = solve("05", "2024", "actual", (lines) => {
       return update[mid];
     })
     .reduce((acc, cur) => acc + cur, 0);
-
   return sum;
 });
 
