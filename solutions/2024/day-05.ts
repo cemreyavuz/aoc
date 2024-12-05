@@ -90,4 +90,40 @@ const solvePart1 = solve("05", "2024", "actual", (lines) => {
   return sum;
 });
 
+const solvePart2 = solve("05", "2024", "actual", (lines) => {
+  const [rulesForward, rulesBackward, updates] = parseInput(lines);
+
+  const [_, incorrectIndexes] = validateUpdates(
+    rulesForward,
+    rulesBackward,
+    updates
+  );
+
+  const sum = updates
+    .filter((_, index) => incorrectIndexes.includes(index))
+    .map((update) => {
+      const toBeSorted = [...update];
+      const sorted = toBeSorted.sort((a, b) => {
+        const forward = rulesForward[a] ?? [];
+        const backward = rulesBackward[b] ?? [];
+        if (forward.includes(b)) {
+          return -1;
+        }
+        if (backward.includes(b)) {
+          return 1;
+        }
+        return 0;
+      });
+      return sorted;
+    })
+    .map((update) => {
+      const mid = Math.floor(update.length / 2);
+      return update[mid];
+    })
+    .reduce((acc, cur) => acc + cur, 0);
+
+  return sum;
+});
+
 solvePart1();
+solvePart2();
