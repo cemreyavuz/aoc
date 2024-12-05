@@ -34,28 +34,52 @@ const parseInput = (
   return [rulesForward, rulesBackward, updates];
 };
 
+const validateUpdates = (
+  rulesForward: Record<string, number[]>,
+  rulesBackward: Record<string, number[]>,
+  updates: number[][]
+): [number[], number[]] => {
+  const correctIndexes: number[] = [];
+  const incorrectIndexes: number[] = [];
+  updates.forEach((update, index) => {
+    const visited: Record<string, boolean> = {};
+    const set = update.reduce((acc, cur) => {
+      acc[cur] = true;
+      return acc;
+    }, {});
+    const validUpdate = update.every((cur) => {
+      const forward = rulesForward[cur] ?? [];
+      const backward = rulesBackward[cur] ?? [];
+      if (forward.some((f) => set[f] && visited[f])) {
+        return false;
+      }
+      if (backward.some((b) => set[b] && !visited[b])) {
+        return false;
+      }
+      visited[cur] = true;
+      return true;
+    });
+    if (validUpdate) {
+      correctIndexes.push(index);
+    } else {
+      incorrectIndexes.push(index);
+    }
+  });
+  return [correctIndexes, incorrectIndexes];
+};
+
 const solvePart1 = solve("05", "2024", "actual", (lines) => {
   const [rulesForward, rulesBackward, updates] = parseInput(lines);
 
+  const [correctIndexes] = validateUpdates(
+    rulesForward,
+    rulesBackward,
+    updates
+  );
+
   const sum = updates
-    .filter((update) => {
-      const visited: Record<string, boolean> = {};
-      const set = update.reduce((acc, cur) => {
-        acc[cur] = true;
-        return acc;
-      }, {});
-      return update.every((cur) => {
-        const forward = rulesForward[cur] ?? [];
-        const backward = rulesBackward[cur] ?? [];
-        if (forward.some((f) => set[f] && visited[f])) {
-          return false;
-        }
-        if (backward.some((b) => set[b] && !visited[b])) {
-          return false;
-        }
-        visited[cur] = true;
-        return true;
-      });
+    .filter((_, index) => {
+      return correctIndexes.includes(index);
     })
     .map((update) => {
       const mid = Math.floor(update.length / 2);
