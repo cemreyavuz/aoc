@@ -12,32 +12,30 @@ const getNextDirection = (directionIndex: number) => {
 };
 
 const getNextPosition = (
-  position: [number, number],
+  position: Position,
   directionIndex: number
-): [number, number] => {
+): Position => {
   const direction = DIRECTIONS[directionIndex];
   return [position[0] + direction[0], position[1] + direction[1]];
 };
 
 type Position = [number, number];
+type Visited = Record<`${number}-${number}`, number[]>;
 
-const solvePart1 = solve("06", "2024", "actual", (lines) => {
-  const matrix = lines.map((line) => line.split(""));
-  let startPosition: Position = [-1, -1];
-  for (let i = 0; i < matrix.length && startPosition[0] === -1; i += 1) {
-    for (let j = 0; j < matrix[0].length && startPosition[0] === -1; j += 1) {
-      if (matrix[i][j] === "^") {
-        startPosition = [i, j];
-      }
-    }
-  }
-
-  const visited: Record<`${number}-${number}`, boolean> = {};
+const getVisitedPositions = (
+  startPosition: Position,
+  matrix: string[][]
+): Visited => {
+  const visited: Visited = {};
 
   let [i, j] = startPosition;
   let directionIndex = 0;
   while (true) {
-    visited[`${i}-${j}`] = true;
+    if (visited[`${i}-${j}`]) {
+      visited[`${i}-${j}`].push(directionIndex);
+    } else {
+      visited[`${i}-${j}`] = [directionIndex];
+    }
     const [nextI, nextJ] = getNextPosition([i, j], directionIndex);
 
     if (
@@ -56,6 +54,21 @@ const solvePart1 = solve("06", "2024", "actual", (lines) => {
       j = nextJ;
     }
   }
+
+  return visited;
+};
+
+const solvePart1 = solve("06", "2024", "actual", (lines) => {
+  const matrix = lines.map((line) => line.split(""));
+  let startPosition: Position = [-1, -1];
+  for (let i = 0; i < matrix.length && startPosition[0] === -1; i += 1) {
+    for (let j = 0; j < matrix[0].length && startPosition[0] === -1; j += 1) {
+      if (matrix[i][j] === "^") {
+        startPosition = [i, j];
+      }
+    }
+  }
+  const visited = getVisitedPositions(startPosition, matrix);
   const count = Object.keys(visited).length;
 
   return count;
