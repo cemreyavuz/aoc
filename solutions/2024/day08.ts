@@ -7,15 +7,19 @@ const isValidPosition = (p: Position, m: Map): boolean => {
   return p[0] >= 0 && p[0] < m.length && p[1] >= 0 && p[1] < m[0].length;
 };
 
-const getAntinodePosition = (s: Position, t: Position): Position => {
+const getAntinodesBasic = (
+  s: Position,
+  t: Position,
+  map: string[][]
+): Position[] => {
   const nextI = t[0] * 2 - s[0];
   const nextJ = t[1] * 2 - s[1];
-  return [nextI, nextJ];
+  const nextPos: Position = [nextI, nextJ];
+  return isValidPosition(nextPos, map) ? [nextPos] : [];
 };
 
-const solvePart1 = solve("08", "2024", "actual", (lines) => {
-  const map = lines.map((line) => line.split(""));
-  const antennas = map.reduce((acc, cur, i) => {
+const getAntennas = (map: string[][]): Record<string, Position[]> => {
+  return map.reduce((acc, cur, i) => {
     cur.forEach((char, j) => {
       if (char !== ".") {
         acc[char] = acc[char] ? acc[char].concat([[i, j]]) : [[i, j]];
@@ -23,7 +27,13 @@ const solvePart1 = solve("08", "2024", "actual", (lines) => {
     });
     return acc;
   }, {} as Record<string, Position[]>);
+};
 
+const getAntinodes = (
+  map: string[][],
+  antennas: Record<string, Position[]>,
+  getAntinodes: (s: Position, t: Position, map: string[][]) => Position[]
+): Record<string, boolean> => {
   const antinodes: Record<string, boolean> = {};
   Object.entries(antennas).forEach(([_, positions]) => {
     for (let i = 0; i < positions.length; i += 1) {
@@ -31,13 +41,20 @@ const solvePart1 = solve("08", "2024", "actual", (lines) => {
         if (i === j) {
           continue;
         }
-        const antinode = getAntinodePosition(positions[i], positions[j]);
-        if (isValidPosition(antinode, map)) {
-          antinodes[antinode.join("-")] = true;
-        }
+        const localAntionodes = getAntinodes(positions[i], positions[j], map);
+        localAntionodes.forEach((a) => {
+          antinodes[a.join("-")] = true;
+        });
       }
     }
   });
+  return antinodes;
+};
+
+const solvePart1 = solve("08", "2024", "actual", (lines) => {
+  const map = lines.map((line) => line.split(""));
+  const antennas = getAntennas(map);
+  const antinodes = getAntinodes(map, antennas, getAntinodesBasic);
 
   return Object.keys(antinodes).length;
 });
