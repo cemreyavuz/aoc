@@ -4,7 +4,7 @@ export const solve = (
   day: string,
   year: string,
   type: InputType,
-  callback: (lines: string[]) => number
+  callback: (lines: string[]) => unknown
 ): (() => void) => {
   return () => {
     console.log(`Solving ${year}/${day} (${type})`);
