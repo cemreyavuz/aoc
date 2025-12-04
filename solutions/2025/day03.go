@@ -4,20 +4,9 @@ import (
 	"aoc/helpers"
 	"fmt"
 	"math"
-	"time"
 )
 
-func main() {
-	start := time.Now()
-
-	SolvePart1()
-	SolvePart2()
-
-	duration := time.Since(start)
-	fmt.Println("Execution time:", duration)
-}
-
-func SolvePart1() {
+func SolveDay03Part1() {
 	fmt.Println("Solving Part 1")
 
 	lines, err := helpers.ReadLines("03", "2025", helpers.Actual)
@@ -54,7 +43,7 @@ func SolvePart1() {
 	fmt.Println("Result:", result)
 }
 
-func SolvePart2() {
+func SolveDay03Part2() {
 	fmt.Println("Solving Part 2")
 
 	lines, err := helpers.ReadLines("03", "2025", helpers.Actual)
