@@ -7,11 +7,63 @@ import (
 
 func SolveDay04Part1() {
 	fmt.Println("Solving Part 1")
+	rolls, _ := ConstructRollsMatrix()
+	result := 0
+	for i := 0; i < len(rolls); i++ {
+		for j := 0; j < len(rolls[0]); j++ {
+			if rolls[i][j] == 0 {
+				continue
+			}
 
+			adjacentRolls := CountAdjacentRolls(rolls, i, j)
+			if adjacentRolls < 4 {
+				result += 1
+			}
+		}
+	}
+
+	fmt.Println("Result:", result)
+}
+
+func SolveDay04Part2() {
+	fmt.Println("Solving Part 2")
+	rolls, _ := ConstructRollsMatrix()
+	result := 0
+
+	for {
+		nextRolls := rolls
+
+		count := 0
+		for i := 0; i < len(rolls); i++ {
+			for j := 0; j < len(rolls[0]); j++ {
+				if rolls[i][j] == 0 {
+					continue
+				}
+
+				adjacentRolls := CountAdjacentRolls(rolls, i, j)
+				if adjacentRolls < 4 {
+					count += 1
+					nextRolls[i][j] = 0
+				}
+			}
+		}
+
+		if count == 0 {
+			break
+		}
+
+		rolls = nextRolls
+		result += count
+	}
+
+	fmt.Println("Result:", result)
+}
+
+func ConstructRollsMatrix() ([][]int, error) {
 	lines, err := helpers.ReadLines("04", "2025", helpers.Actual)
 	if err != nil {
 		fmt.Println("Error reading lines:", err)
-		return
+		return nil, err
 	}
 	fmt.Println("Read", len(lines), "lines")
 
@@ -30,21 +82,7 @@ func SolveDay04Part1() {
 		}
 	}
 
-	result := 0
-	for i := 0; i < rows; i++ {
-		for j := 0; j < cols; j++ {
-			if rolls[i][j] == 0 {
-				continue
-			}
-
-			adjacentRolls := CountAdjacentRolls(rolls, i, j)
-			if adjacentRolls < 4 {
-				result += 1
-			}
-		}
-	}
-
-	fmt.Println("Result:", result)
+	return rolls, nil
 }
 
 func CountAdjacentRolls(rolls [][]int, row int, col int) int {
