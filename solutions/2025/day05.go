@@ -42,22 +42,7 @@ func SolveDay05Part1() {
 		}
 	}
 
-	sort.Slice(ranges, func(i, j int) bool {
-		return ranges[i][0] < ranges[j][0]
-	})
-
-	merged := [][]int{ranges[0]}
-	for i := 1; i < len(ranges); i += 1 {
-		cur := ranges[i]
-		prev := merged[len(merged)-1]
-
-		if cur[0] > prev[1] {
-			merged = append(merged, cur)
-			continue
-		}
-
-		prev[1] = max(prev[1], cur[1])
-	}
+	merged := MergeRanges(ranges)
 
 	result := 0
 	for _, ingredient := range ingredients {
@@ -75,4 +60,58 @@ func SolveDay05Part1() {
 	}
 
 	fmt.Println("Result:", result)
+}
+
+func SolveDay05Part2() {
+	fmt.Println("Solving Part 2")
+
+	lines, err := helpers.ReadLines("05", "2025", helpers.Actual)
+	if err != nil {
+		fmt.Println("Error reading lines:", err)
+		return
+	}
+	fmt.Println("Read", len(lines), "lines")
+
+	ranges := [][]int{}
+	for i := 0; i < len(lines); i++ {
+		line := lines[i]
+		if line == "" {
+			break
+		}
+
+		arr := strings.Split(line, "-")
+		first, _ := strconv.Atoi(arr[0])
+		second, _ := strconv.Atoi(arr[1])
+		ranges = append(ranges, []int{first, second})
+	}
+
+	merged := MergeRanges(ranges)
+
+	result := 0
+	for _, r := range merged {
+		result += r[1] - r[0] + 1
+	}
+
+	fmt.Println("Result:", result)
+}
+
+func MergeRanges(ranges [][]int) [][]int {
+	sort.Slice(ranges, func(i, j int) bool {
+		return ranges[i][0] < ranges[j][0]
+	})
+
+	merged := [][]int{ranges[0]}
+	for i := 1; i < len(ranges); i += 1 {
+		cur := ranges[i]
+		prev := merged[len(merged)-1]
+
+		if cur[0] > prev[1] {
+			merged = append(merged, cur)
+			continue
+		}
+
+		prev[1] = max(prev[1], cur[1])
+	}
+
+	return merged
 }
