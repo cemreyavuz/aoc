@@ -66,3 +66,60 @@ func SolveDay06Part1() {
 
 	fmt.Println("Result:", result)
 }
+
+func SolveDay06Part2() {
+	fmt.Println("Solving Part 2")
+
+	lines, err := helpers.ReadLines("06", "2025", helpers.Actual)
+	if err != nil {
+		fmt.Println("Error reading lines:", err)
+		return
+	}
+	fmt.Println("Read", len(lines), "lines")
+
+	nums := []int{}
+	operators := []string{}
+	for i := 0; i < len(lines[0]); i += 1 {
+		num := ""
+		for j := 0; j < len(lines)-1; j += 1 {
+			c := lines[j][i]
+			if c == ' ' {
+				continue
+			} else {
+				num += string(c)
+			}
+		}
+
+		if num != "" {
+			n, _ := strconv.Atoi(num)
+			nums = append(nums, n)
+		} else {
+			nums = append(nums, -1)
+		}
+
+		if lines[len(lines)-1][i] != ' ' {
+			operators = append(operators, string(lines[len(lines)-1][i]))
+		}
+	}
+
+	c := 0
+	result := 0
+	for _, op := range operators {
+		total := nums[c]
+		c += 1
+		for ; c < len(nums); c += 1 {
+			if nums[c] == -1 {
+				break
+			}
+			if op == "*" {
+				total *= nums[c]
+			} else if op == "+" {
+				total += nums[c]
+			}
+		}
+		c += 1
+		result += total
+	}
+
+	fmt.Println("Result:", result)
+}
