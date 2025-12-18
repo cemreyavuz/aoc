@@ -8,8 +8,8 @@ import (
 func main() {
 	start := time.Now()
 
-	// SolveDay11Part1()
-	SolveDay11Part2()
+	SolveDay10Part1()
+	// SolveDay10Part2()
 
 	duration := time.Since(start)
 	fmt.Println("\nTotal execution time:", duration)
